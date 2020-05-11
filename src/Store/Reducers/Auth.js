@@ -12,7 +12,8 @@ const reducer = (state = initialState, action) => {
     switch (action.types) {
         case 'AUTH_START':
             return updatedObject(state, {
-                error: null, loading: true
+                error: null,
+                loading: true
             });
         case 'AUTH_SUCCESS':
             return updatedObject(state, {
@@ -20,12 +21,18 @@ const reducer = (state = initialState, action) => {
                 userId: action.userId,
                 error: null,
                 loading: false
-            })
+            });
         case 'AUTH_FAIL':
             return updatedObject(state, {
                 error: action.error,
                 loading: false
-            })
+            });
+            
+        case 'AUTH_LOGOUT':
+            return updatedObject(state, {
+                token: null,
+                userId: null
+            });
         default:
             return state
     }
