@@ -42,6 +42,7 @@ class Builder extends Component {
         if (this.props.isAuthenticated) {
             this.setState({ purchasing: true });
         } else {
+            this.props.onSetAuthRedirectPath('/checkout');
             this.props.history.push('/auth');
             // Direct to auth component
         }
@@ -115,7 +116,8 @@ const mapDispatchToProps = dispatch => {
         onAddIngredient: (ingName) => dispatch(Actions.addIngredient(ingName)),
         onRemoveIngredient: (ingName) => dispatch(Actions.removeIngredient(ingName)),
         onInitIngredient: () => dispatch(Actions.initIngredients()),
-        onInitPurchase: () => dispatch(Actions.purchaseInit())
+        onInitPurchase: () => dispatch(Actions.purchaseInit()),
+        onSetAuthRedirectPath: (path) => dispatch(Actions.setAuthRedirectPath(path))
     }
 }
 
