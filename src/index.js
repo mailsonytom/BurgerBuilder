@@ -17,7 +17,7 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const rootReducer = combineReducers({
     Burger: BurgerReducer,
     Order: OrderReducer,
-    authen: AuthReducer
+    auth: AuthReducer
 });
 
 const store = createStore(rootReducer, composeEnhancers(

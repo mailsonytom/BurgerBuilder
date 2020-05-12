@@ -39,7 +39,7 @@ const authLogout = (state, action) => {
 }
 
 const reducer = (state = initialState, action) => {
-    switch (action.types) {
+    switch (action.type) {
         case 'AUTH_START': return authStart(state, action);
         case 'AUTH_SUCCESS': return authSuccess(state, action);
         case 'AUTH_FAIL': return authFail(state, action);
