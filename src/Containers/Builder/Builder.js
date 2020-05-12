@@ -39,7 +39,12 @@ class Builder extends Component {
     }
 
     purchaseHandler = () => {
-        this.setState({ purchasing: true });
+        if (this.props.isAuthenticated) {
+            this.setState({ purchasing: true });
+        } else {
+            this.props.history.push('/auth');
+            // Direct to auth component
+        }
     }
 
     purchaseCancelHandler = () => {
@@ -74,6 +79,7 @@ class Builder extends Component {
                         disabled={disabledInfo}
                         purchasable={this.updatePurchaseState(this.props.ings)}
                         ordered={this.purchaseHandler}
+                        isAuth={this.props.isAuthenticated}
                         price={this.props.price} />
                 </Aux>
             );
@@ -99,7 +105,8 @@ const mapStateToProps = state => {
     return {
         ings: state.Burger.ingredients,
         price: state.Burger.totalPrice,
-        error: state.Burger.error
+        error: state.Burger.error,
+        isAuthenticated: state.auth.token !== null
     }
 }
 
