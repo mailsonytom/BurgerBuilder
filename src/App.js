@@ -1,60 +1,71 @@
-import React, { Component } from 'react';
-import Builder from './Containers/Builder/Builder';
-import Layout from './Components/Layout/Layout';
-import Checkout from './Containers/Checkout/Checkout';
-import { Route, withRouter, Switch, Redirect } from 'react-router';
-import Orders from './Containers/Orders/Orders';
-import Logout from './Containers/Authentication/Logout/Logout';
-import Auth from './Containers/Authentication/Auth';
-import { connect } from 'react-redux';
-import * as actions from './Store/Actions/Index';
+import React, { useEffect, Suspense } from "react";
+import Builder from "./Containers/Builder/Builder";
+import Layout from "./Components/Layout/Layout";
+import { Route, withRouter, Switch, Redirect } from "react-router";
+import Logout from "./Containers/Authentication/Logout/Logout";
+import { connect } from "react-redux";
+import * as actions from "./Store/Actions/Index";
 
-class App extends Component {
+const Checkout = React.lazy(() => {
+  return import("./Containers/Checkout/Checkout");
+});
 
-  componentDidMount() {
-    this.props.onTryAutoSignup();
-  }
+const Orders = React.lazy(() => {
+  return import("./Containers/Orders/Orders");
+});
 
-  render() {
-    let routes = (
+const Auth = React.lazy(() => {
+  return import("./Containers/Authentication/Auth");
+});
+
+const app = (props) => {
+  const { onTryAutoSignup } = props;
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useEffect(() => {
+    onTryAutoSignup();
+  }, [onTryAutoSignup]);
+
+  let routes = (
+    <Switch>
+      <Route path="/auth" render={(props) => <Auth {...props} />} />
+      <Route path="/" exact component={Builder} />
+      <Redirect to="/" />
+    </Switch>
+  );
+
+  if (props.isAuthenticated) {
+    routes = (
       <Switch>
-        <Route path="/auth" component={Auth} />
         <Route path="/" exact component={Builder} />
+        <Route path="/orders" render={(props) => <Orders {...props} />} />
+        <Route path="/logout" component={Logout} />
+        <Route path="/auth" render={(props) => <Auth {...props} />} />
+        <Route path="/checkout" render={(props) => <Checkout {...props} />} />
         <Redirect to="/" />
       </Switch>
     );
-
-    if (this.props.isAuthenticated) {
-      routes = (
-        <Switch>
-          <Route path="/" exact component={Builder} />
-          <Route path="/orders" component={Orders} />
-          <Route path="/logout" component={Logout} />
-          <Route path="/checkout" component={Checkout} />
-          <Redirect to="/" />
-        </Switch>
-      )
-    }
-    return (
-      <div>
-        <Layout>
-          {routes}
-        </Layout>
-      </div>
-    );
   }
-}
 
-const mapStateToProps = state => {
+  return (
+    <div>
+      <Layout>
+        <Suspense fallback={<p>Loading...</p>}>{routes}</Suspense>
+      </Layout>
+    </div>
+  );
+};
+
+const mapStateToProps = (state) => {
   return {
-    isAuthenticated: state.auth.token !== null
+    isAuthenticated: state.auth.token !== null,
   };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
-    onTryAutoSignup: () => dispatch(actions.authCheckState())
+    onTryAutoSignup: () => dispatch(actions.authCheckState()),
   };
 };
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(app));

@@ -1,48 +1,44 @@
-import React, { Component } from 'react';
-import Aux from '../../hoc/Aux';
-import styles from './Layout.module.css';
-import Toolbar from '../Navigation/Toolbar/Toolbar';
-import Sidedrawer from '../Navigation/Sidedrawer/Sidedrawer';
-import { connect } from 'react-redux';
+import React, { useState } from "react";
+import Aux from "../../hoc/Aux";
+import styles from "./Layout.module.css";
+import Toolbar from "../Navigation/Toolbar/Toolbar";
+import Sidedrawer from "../Navigation/Sidedrawer/Sidedrawer";
+import { connect } from "react-redux";
 
-class Layout extends Component {
+const layout = (props) => {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const [sideDrawerIsVisible, setSideDrawerIsVisible] = useState(false);
 
-    state = {
-        showSidedrawer: false
-    }
+  const SidedrawerClosedHandler = (props) => {
+    setSideDrawerIsVisible(false);
+  };
 
-    SidedrawerClosedHandler = (props) => {
-        this.setState({ showSidedrawer: false })
-    }
+  const SidedrawerToggleHandler = () => {
+    setSideDrawerIsVisible(!sideDrawerIsVisible);
+  };
 
-    SidedrawerToggleHandler = () => {
-        this.setState((prevState) => {
-            return { showSidedrawer: !prevState.showSidedrawer }
-        });
-    }
-
-    render() {
-        return (
-            <Aux>
-                <Toolbar
-                    isAuth={this.props.isAuthenticated}
-                    DrawerToggleClicked={this.SidedrawerToggleHandler} />
-                <Sidedrawer
-                    isAuth={this.props.isAuthenticated}
-                    open={this.state.showSidedrawer}
-                    closed={this.SidedrawerClosedHandler} />
-                <main className={styles.content} role="main">
-                    {this.props.children}
-                </main>
-            </Aux >
-        );
-    }
-}
-
-const mapStateToProps = state => {
-    return {
-        isAuthenticated: state.auth.token !== null
-    };
+  return (
+    <Aux>
+      <Toolbar
+        isAuth={props.isAuthenticated}
+        DrawerToggleClicked={SidedrawerToggleHandler}
+      />
+      <Sidedrawer
+        isAuth={props.isAuthenticated}
+        open={sideDrawerIsVisible}
+        closed={SidedrawerClosedHandler}
+      />
+      <main className={styles.content} role="main">
+        {props.children}
+      </main>
+    </Aux>
+  );
 };
 
-export default connect(mapStateToProps)(Layout);
+const mapStateToProps = (state) => {
+  return {
+    isAuthenticated: state.auth.token !== null,
+  };
+};
+
+export default connect(mapStateToProps)(layout);
